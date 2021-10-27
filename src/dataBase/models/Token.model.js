@@ -8,21 +8,21 @@ Token.init(
         id: {
             type: Sequelize.DataTypes.UUID,
             primaryKey: true,
-            defaultValue: Sequelize.DataTypes.UUIDV4
+            
         },
-        userid: {
+        userId: {
             type: Sequelize.DataTypes.UUID,
             primaryKey: true,
-            defaultValue: Sequelize.DataTypes.UUIDV4
+            
         },
         value: {
             type: Sequelize.STRING,
-            defaultValue: 'Title',
+            
         },
         
     },
 
-    { sequelize: sequelize, underscored: true, modelName: 'todo' }
+    { sequelize: sequelize, underscored: true, modelName: 'token' }
 );
 
 module.exports = Token

@@ -1,6 +1,5 @@
 const Sequelize = require('sequelize');
 const { sequelize } = require('..');
-
 class ToDo extends Sequelize.Model {}
 
 ToDo.init(
@@ -10,10 +9,9 @@ ToDo.init(
             primaryKey: true,
             defaultValue: Sequelize.DataTypes.UUIDV4
         },
-        userid: {
+        userId: {
             type: Sequelize.DataTypes.UUID,
             primaryKey: true,
-            defaultValue: Sequelize.DataTypes.UUIDV4
         },
         title: {
             type: Sequelize.STRING,

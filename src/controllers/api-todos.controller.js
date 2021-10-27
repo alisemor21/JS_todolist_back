@@ -1,5 +1,6 @@
 const { Router } = require('express');
 const ToDo = require('../dataBase/models/ToDo.model');
+const User = require('../dataBase/models/User.model');
 const { create } = require('../dataBase/models/ToDo.model');
 //const ErrorResponse = require('../classes/error-response');
 //const ToDo = require('../dataBase/models/ToDo.model.');
@@ -30,6 +31,7 @@ async function getToDoById(req, res, next) {
 }
 
 async function createToDo(req, res, next) {
+    const user = await User.create();
     const todo = await ToDo.create({
         title: req.body.title,
         description: req.body.description,
