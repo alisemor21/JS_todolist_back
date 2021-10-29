@@ -1,49 +1,46 @@
-const Sequelize = require('sequelize');
-const { sequelize } = require('..');
-
-
+const Sequelize = require("sequelize");
+const { sequelize } = require("..");
 class User extends Sequelize.Model {}
 
 User.init(
-    {
-        id: {
-            type: Sequelize.DataTypes.UUID,
-            primaryKey: true,
-            defaultValue: Sequelize.DataTypes.UUIDV4
-        },
-        login: {
-            type: Sequelize.STRING,
-            primaryKey: true,
-            defaultValue: Sequelize.DataTypes.UUIDV4,
-            allowNull: false
-        },
-        password: {
-            type: Sequelize.STRING,
-            defaultValue: 'Title',
-        },
-        email: {
-            type: Sequelize.STRING,
-            allowNull: false,
-            // allowNull defaults to true
-          },
-        name: {
-            type: Sequelize.STRING,
-            defaultValue: false,
-        },
+  {
+    id: {
+      type: Sequelize.DataTypes.UUID,
+      primaryKey: true,
+      defaultValue: Sequelize.DataTypes.UUIDV4,
     },
+    login: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    password: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    email: {
+      type: Sequelize.STRING,
+      defaultValue: "",
+      // allowNull defaults to true
+    },
+    name: {
+      type: Sequelize.STRING,
+      defaultValue: "",
+    },
+  },
 
-    { sequelize: sequelize, underscored: true, modelName: 'user' }
+  { sequelize: sequelize, underscored: true, modelName: "user" }
 );
 
+const ToDo = require("./ToDo.model");
+const Token = require("./Token.model");
 
-const ToDo = require('./ToDo.model');
-const Token = require('./Token.model');
 User.hasMany(ToDo);
 User.hasMany(Token);
 Token.belongsTo(User, {
-    foreignKey: 'userId'
+  foreignKey: "userId",
 });
 ToDo.belongsTo(User, {
-    foreignKey: 'userId'
+  foreignKey: "userId",
 });
-module.exports = User
+
+module.exports = User;
