@@ -25,7 +25,7 @@ async function registration(req, res, next) {
   });
 
   if (userByLogin) {
-    throw new ErrorResponse("User with this login already exists", 400);
+    throw new ErrorResponse("User with this login already exists!", 400);
   }
 
   const newUser = await User.create(req.body);
@@ -39,7 +39,7 @@ async function login(req, res, next) {
   });
 
   if (!existingUser) {
-    throw new ErrorResponse("Incorrect login or password", 404);
+    throw new ErrorResponse("Incorrect login or password!", 404);
   }
 
   const newToken = await Token.create({
@@ -49,7 +49,13 @@ async function login(req, res, next) {
 
   res.status(200).json({
     accessToken: newToken.value,
-  });
+    // userId: existingUser.userId,
+    // login: existingUser.login,
+    // password: existingUser.password,
+    // email: existingUser.email
+    existingUser});
+
+
 }
 
 initRoutes();

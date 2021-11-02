@@ -1,59 +1,47 @@
-const { Router } = require('express');
-const ToDo = require('../dataBase/models/ToDo.model');
-const { create } = require('../dataBase/models/ToDo.model');
-//const ErrorResponse = require('../classes/error-response');
-//const ToDo = require('../dataBase/models/ToDo.model.');
-const { asyncHandler } = require('../middlewares/middlewares');
+const { Router } = require("express");
+const Token = require("../dataBase/models/Token.model");
+const ErrorResponse = require("../classes/error-response");
+const User = require("../dataBase/models/User.model");
+const { asyncHandler, requireToken } = require("../middlewares/middlewares");
 
 const router = Router();
 
-function initRoutes() { 
-    router.get('/:id', asyncHandler(getUserInfo));
-    router.patch('/:id',asyncHandler(updateUser));
-    router.post('/logout',asyncHandler(logoutUser));
-
+function initRoutes() {
+  router.get("/me", asyncHandler(requireToken), asyncHandler(getUserInfo));
+  router.patch("/me", asyncHandler(requireToken), asyncHandler(updateUser));
+  router.post("/logout", asyncHandler(requireToken), asyncHandler(logoutUser));
 }
 
 async function getUserInfo(req, res, next) {
-    const userInfo = await User.findByPk(req.params.id);
-    if (!userInfo) {
-        throw new ErrorResponse('No such user', 404);
-    }
-    res.status(200).json(userInfo);
+  const userInfo = await User.findByPk(req.userId);
+  if (!userInfo) {
+    throw new ErrorResponse("No such user", 404);
+  }
+  res.status(200).json(userInfo);
 }
 
 async function updateUser(req, res, next) {
-    const user = await User.findByPk(req.params.id);
+  const user = await User.findByPk(req.userId);
+  if (!user) {
+    throw new ErrorResponse("No such user", 404);
+  }
+  await user.update(req.body);
 
-    if (!user){ throw new ErrorResponse('No such user', 404)}
-    await user.update(req.body);
-    res.status(200).json({message: "OK"});
+  const updUser = await User.findByPk(req.userId);
+
+  res.status(200).json(updUser);
 }
+
 async function logoutUser(req, res, next) {
-    await ToDo.destroy({truncate: true})
-    res.status(200).json(ToDo);
+  await Token.destroy({
+    where: {
+      value: req.header("x-access-token"),
+    },
+  });
+  const allUsersTokens = await Token.findAll();
+  res.status(200).json(allUsersTokens);
 }
-// async function deleteToDoById(req, res, next) {
-//     //const id = req.params.index;
-//     //await ToDo.destroy({where: { id: id }})
-
-//     const todo = await ToDo.findByPk(req.params.id);
-//     if (!todo){ throw new ErrorResponse('No ToDo found', 404)}
-
-//     await todo.destroy();
-
-//     res.status(200).json({message: "OK"});
-// }
-
-// async function patchToDo(req, res, next) {
-//     let todo = await ToDo.findByPk(req.params.id);
-
-//     if (!todo){ throw new ErrorResponse('No ToDo found', 404)}
-//     const id = req.params.id;
-//     await todo.update(req.body);
-//     res.status(200).json({message: "OK"});
-// }
 
 initRoutes();
 
-module.exports = router
+module.exports = router;

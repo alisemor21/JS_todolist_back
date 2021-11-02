@@ -19,8 +19,8 @@ User.init(
     },
     email: {
       type: Sequelize.STRING,
-      defaultValue: "",
-      // allowNull defaults to true
+      //defaultValue: "",
+      allowNull: false,
     },
     name: {
       type: Sequelize.STRING,
