@@ -1,7 +1,5 @@
 const { Router } = require("express");
 const ToDo = require("../dataBase/models/ToDo.model");
-const User = require("../dataBase/models/User.model");
-const Token = require("../dataBase/models/Token.model");
 const ErrorResponse = require("../classes/error-response");
 const { asyncHandler, requireToken } = require("../middlewares/middlewares");
 
@@ -12,7 +10,11 @@ function initRoutes() {
   router.get("/:id", asyncHandler(requireToken), asyncHandler(getToDoById));
   router.post("/", asyncHandler(requireToken), asyncHandler(createToDo));
   router.delete("/", asyncHandler(requireToken), asyncHandler(deleteToDos));
-  router.delete("/:id", asyncHandler(requireToken), asyncHandler(deleteToDoById));
+  router.delete(
+    "/:id",
+    asyncHandler(requireToken),
+    asyncHandler(deleteToDoById)
+  );
   router.patch("/:id", asyncHandler(requireToken), asyncHandler(patchToDo));
 }
 
@@ -22,9 +24,8 @@ async function getToDos(req, res, next) {
 }
 
 async function getToDoById(req, res, next) {
-  const todo = await ToDo.findOne({ where:
-    {id: req.params.id,
-    userId: req.userId}
+  const todo = await ToDo.findOne({
+    where: { id: req.params.id, userId: req.userId },
   });
   if (!todo) {
     throw new ErrorResponse("No todo found", 404);
@@ -46,24 +47,21 @@ async function deleteToDos(req, res, next) {
 }
 
 async function deleteToDoById(req, res, next) {
-  const todo = await ToDo.findOne(
-    {where:
-    {id: req.params.id,
-    userId: req.userId}});
+  const todo = await ToDo.findOne({
+    where: { id: req.params.id, userId: req.userId },
+  });
   if (!todo) {
     throw new ErrorResponse("No ToDo found", 404);
   }
 
   await todo.destroy();
 
-  res.status(200).json({ message: "OK" });
+  res.status(200).json({ message: "todo was deleted" });
 }
 
 async function patchToDo(req, res, next) {
-  let todo = await ToDo.findOne(
-    { where:
-    {id: req.params.id,
-    userId: req.userId}
+  let todo = await ToDo.findOne({
+    where: { id: req.params.id, userId: req.userId },
   });
 
   if (!todo) {
@@ -71,7 +69,7 @@ async function patchToDo(req, res, next) {
   }
 
   await todo.update(req.body);
-  todo = await ToDo.findByPk(req.params.id);               // возвращается старая
+  todo = await ToDo.findByPk(req.params.id); // возвращается старая
   res.status(200).json(todo);
 }
 initRoutes();

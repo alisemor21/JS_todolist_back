@@ -1,14 +1,10 @@
 const { Router } = require("express");
 const { nanoid } = require("nanoid");
-const ErrorResponse = require('../classes/error-response');
-//const { where } = require("sequelize/types");
-const ToDo = require("../dataBase/models/ToDo.model");
-const { create } = require("../dataBase/models/ToDo.model");
+const ErrorResponse = require("../classes/error-response");
 const Token = require("../dataBase/models/Token.model");
 const User = require("../dataBase/models/User.model");
-//const ErrorResponse = require('../classes/error-response');
-//const ToDo = require('../dataBase/models/ToDo.model.');
 const { asyncHandler } = require("../middlewares/middlewares");
+const { Op } = require("sequelize");
 
 const router = Router();
 
@@ -18,14 +14,17 @@ function initRoutes() {
 }
 
 async function registration(req, res, next) {
-  const userByLogin = await User.findOne({
+  const userInDB = await User.findOne({
     where: {
-      login: req.body.login,
+      [Op.or]: [
+        { login: req.body.login, },
+        { email: req.body.email, }
+      ]
     },
   });
 
-  if (userByLogin) {
-    throw new ErrorResponse("User with this login already exists!", 400);
+  if (userInDB) {
+    throw new ErrorResponse("User with this login or email already exists!", 400);
   }
 
   const newUser = await User.create(req.body);
@@ -53,9 +52,8 @@ async function login(req, res, next) {
     // login: existingUser.login,
     // password: existingUser.password,
     // email: existingUser.email
-    existingUser});
-
-
+    existingUser,
+  });
 }
 
 initRoutes();
